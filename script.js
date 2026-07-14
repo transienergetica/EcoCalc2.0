@@ -598,8 +598,32 @@ location.reload();
 }
 
 //====================================
-//// Folhas caindo
 
+Modo escuro
+// ======================
+
+const btnModoEscuro = document.getElementById("modoEscuro");
+
+if (btnModoEscuro) {
+
+    btnModoEscuro.addEventListener("click", () => {
+
+        document.body.classList.toggle("dark");
+
+        if (document.body.classList.contains("dark")) {
+            btnModoEscuro.innerHTML = "☀️ Modo Claro";
+        } else {
+            btnModoEscuro.innerHTML = "🌙 Modo Escuro";
+        }
+
+    });
+
+}
+
+//====================================
+//// Folhas caindo
+//====================================
+    
 function criarFolha(){
 
 let folha=document.createElement("div");
