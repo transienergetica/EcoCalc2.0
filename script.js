@@ -598,29 +598,29 @@ location.reload();
 }
 
 //====================================
-// MODO ESCURO
-//====================================
+//// Folhas caindo
 
-const modo=document.getElementById("modoEscuro");
+function criarFolha(){
 
-if(modo){
+let folha=document.createElement("div");
 
-modo.onclick=()=>{
+folha.className="folha";
 
-document.body.classList.toggle("dark");
+folha.innerHTML="🍃";
 
-if(document.body.classList.contains("dark")){
+folha.style.left=Math.random()*100+"vw";
 
-modo.innerHTML="☀️ Modo Claro";
+folha.style.animationDuration=(5+Math.random()*6)+"s";
 
-}else{
+document.body.appendChild(folha);
 
-modo.innerHTML="🌙 Modo Escuro";
+setTimeout(()=>{
 
-}
+folha.remove();
 
-};
-
-}
+},10000);
 
 }
+
+setInterval(criarFolha,700);
+    
