@@ -1,6 +1,7 @@
 // ==============================
 // ECOCALC 2.0
-// Parte 1
+// ==============================
+// ECOCALC 3.0
 // ==============================
 
 const perguntas = [
@@ -26,7 +27,6 @@ html:`
 
 {
 titulo:"⚡ Energia",
-
 html:`
 <label>Consumo de energia (kWh/mês)</label>
 
@@ -35,130 +35,156 @@ html:`
 <label>Você utiliza lâmpadas LED?</label>
 
 <select id="led">
-
 <option>Sim</option>
-
 <option>Não</option>
-
 </select>
 `
 },
 
 {
 titulo:"💧 Água",
-
 html:`
 <label>Quanto tempo dura seu banho?</label>
 
 <select id="banho">
-
 <option>Menos de 5 minutos</option>
-
 <option>5 a 10 minutos</option>
-
 <option>Mais de 10 minutos</option>
-
 </select>
 
 <label>Você reaproveita água?</label>
 
 <select id="agua">
-
 <option>Sim</option>
-
 <option>Não</option>
-
 </select>
 `
 },
 
 {
 titulo:"♻️ Resíduos",
-
 html:`
 <label>Você faz coleta seletiva?</label>
 
 <select id="reciclagem">
-
 <option>Sim</option>
-
 <option>Não</option>
-
 </select>
 
 <label>Utiliza garrafa reutilizável?</label>
 
 <select id="garrafa">
-
 <option>Sim</option>
-
 <option>Não</option>
-
 </select>
 `
 },
 
 {
 titulo:"🌳 Hábitos Sustentáveis",
-
 html:`
 <label>Você costuma economizar papel?</label>
 
 <select id="papel">
-
 <option>Sim</option>
-
 <option>Não</option>
-
 </select>
 
 <label>Você apaga as luzes ao sair?</label>
 
 <select id="luzes">
-
 <option>Sempre</option>
-
 <option>Às vezes</option>
-
 <option>Nunca</option>
-
 </select>
 `
 }
 
 ];
 
+// ==============================
+// VARIÁVEIS
+// ==============================
+
 let etapa = 0;
+
+const respostas = {};
 
 const telaInicial = document.querySelector(".inicio");
 const quiz = document.querySelector(".quiz");
 const loading = document.querySelector(".loading");
 const resultado = document.querySelector(".resultado");
 
-window.onload = function(){
+// ==============================
+// MOSTRAR PERGUNTA
+// ==============================
 
-document.getElementById("btnComecar").onclick = () => {
-
-    telaInicial.style.display = "none";
-    quiz.style.display = "block";
-
-    mostrarPergunta();
-
-};
 function mostrarPergunta(){
 
-document.getElementById("tituloPergunta").innerHTML=
+document.getElementById("tituloPergunta").innerHTML =
 perguntas[etapa].titulo;
 
-document.getElementById("pergunta").innerHTML=
+document.getElementById("pergunta").innerHTML =
 perguntas[etapa].html;
 
-document.getElementById("barra").style.width=
+document.getElementById("barra").style.width =
 ((etapa+1)/perguntas.length)*100+"%";
+
+// Restaurar respostas já preenchidas
+
+Object.keys(respostas).forEach(id=>{
+
+const campo=document.getElementById(id);
+
+if(campo){
+
+campo.value=respostas[id];
 
 }
 
+});
+
+}
+
+// ==============================
+// SALVAR RESPOSTAS
+// ==============================
+
+function salvarRespostas(){
+
+document.querySelectorAll("#pergunta input,#pergunta select").forEach(campo=>{
+
+respostas[campo.id]=campo.value;
+
+});
+
+}
+
+// ==============================
+// INICIAR
+// ==============================
+
+window.onload=()=>{
+
+document.getElementById("btnComecar").onclick=()=>{
+
+telaInicial.style.display="none";
+
+quiz.style.display="block";
+
+mostrarPergunta();
+
+};
+
+};
+
+// ==============================
+// BOTÃO PRÓXIMO
+// ==============================
+
 document.getElementById("proximo").onclick=()=>{
+
+salvarRespostas();
 
 if(etapa<perguntas.length-1){
 
@@ -172,13 +198,21 @@ quiz.style.display="none";
 
 loading.style.display="flex";
 
-setTimeout(calcularResultado,2500);
+setTimeout(calcularResultado,2000);
 
 }
+
+};
+
+// ==============================
+// BOTÃO VOLTAR
+// ==============================
 
 document.getElementById("anterior").onclick=()=>{
 
 if(etapa>0){
+
+salvarRespostas();
 
 etapa--;
 
@@ -186,478 +220,326 @@ mostrarPergunta();
 
 }
 
-}
+};
 
 function calcularResultado(){
 
-    let emissao = 0;
+let emissao = 0;
 
-    // ===== CAPTURA DOS DADOS =====
+//==============================
+// Ler respostas salvas
+//==============================
 
-    const transporte = document.getElementById("transporte").value;
-    const km = Number(document.getElementById("km").value) || 0;
-    const energia = Number(document.getElementById("energia").value) || 0;
-    const led = document.getElementById("led").value;
-    const banho = document.getElementById("banho").value;
-    const agua = document.getElementById("agua").value;
-    const reciclagem = document.getElementById("reciclagem").value;
-    const garrafa = document.getElementById("garrafa").value;
-    const papel = document.getElementById("papel").value;
-    const luzes = document.getElementById("luzes").value;
+const transporte = respostas.transporte || "";
+const km = Number(respostas.km) || 0;
+const energia = Number(respostas.energia) || 0;
+const led = respostas.led || "";
+const banho = respostas.banho || "";
+const agua = respostas.agua || "";
+const reciclagem = respostas.reciclagem || "";
+const garrafa = respostas.garrafa || "";
+const papel = respostas.papel || "";
+const luzes = respostas.luzes || "";
 
-    // ===== TRANSPORTE =====
+//==============================
+// Transporte
+//==============================
 
-    switch(transporte){
+switch(transporte){
 
-        case "Carro":
-            emissao += 35;
-            break;
+case "Carro":
+    emissao += 30;
+    break;
 
-        case "Moto":
-            emissao += 22;
-            break;
+case "Moto":
+    emissao += 20;
+    break;
 
-        case "Ônibus":
-            emissao += 12;
-            break;
+case "Ônibus":
+    emissao += 10;
+    break;
 
-        case "Bicicleta":
-            emissao += 2;
-            break;
+case "Bicicleta":
+    emissao += 2;
+    break;
 
-        case "A pé":
-            emissao += 0;
-            break;
+case "A pé":
+    emissao += 0;
+    break;
 
-    }
+}
 
-    emissao += km * 0.45;
+emissao += km * 0.12;
 
-    // ===== ENERGIA =====
+//==============================
+// Energia
+//==============================
 
-    emissao += energia * 0.18;
+emissao += energia * 0.06;
 
-    if(led=="Não")
-        emissao += 12;
+if(led=="Não")
+    emissao += 8;
 
-    // ===== BANHO =====
+//==============================
+// Banho
+//==============================
 
-    switch(banho){
+switch(banho){
 
-        case "Mais de 20 minutos":
-            emissao += 15;
-            break;
+case "Menos de 5 minutos":
+    emissao += 1;
+    break;
 
-        case "10 a 20 minutos":
-            emissao += 8;
-            break;
+case "5 a 10 minutos":
+    emissao += 5;
+    break;
 
-        case "Até 10 minutos":
-            emissao += 2;
-            break;
+case "Mais de 10 minutos":
+    emissao += 10;
+    break;
 
-    }
+}
 
-    // ===== ÁGUA =====
+//==============================
+// Água
+//==============================
 
-    switch(agua){
+if(agua=="Não")
+    emissao += 8;
 
-        case "Alto":
-            emissao += 15;
-            break;
+//==============================
+// Reciclagem
+//==============================
 
-        case "Médio":
-            emissao += 8;
-            break;
+if(reciclagem=="Não")
+    emissao += 10;
 
-        case "Baixo":
-            emissao += 2;
-            break;
+//==============================
+// Garrafa
+//==============================
 
-    }
+if(garrafa=="Não")
+    emissao += 5;
 
-    // ===== RECICLAGEM =====
+//==============================
+// Papel
+//==============================
 
-    switch(reciclagem){
+if(papel=="Não")
+    emissao += 5;
 
-        case "Nunca":
-            emissao += 15;
-            break;
+//==============================
+// Luzes
+//==============================
 
-        case "Às vezes":
-            emissao += 8;
-            break;
+switch(luzes){
 
-        case "Sempre":
-            emissao += 0;
-            break;
+case "Sempre":
+    emissao += 0;
+    break;
 
-    }
+case "Às vezes":
+    emissao += 5;
+    break;
 
-    // ===== GARRAFA =====
+case "Nunca":
+    emissao += 10;
+    break;
 
-    if(garrafa=="Não")
-        emissao += 6;
+registrarUso();
 
-    // ===== PAPEL =====
+}
 
-    switch(papel){
+//==============================
+// Pontuação
+//==============================
 
-        case "Muito":
-            emissao += 10;
-            break;
+let pontos = Math.round(100 - (emissao * 0.35));
 
-        case "Médio":
-            emissao += 5;
-            break;
+if(pontos>100) pontos=100;
 
-        case "Pouco":
-            emissao += 1;
-            break;
+if(pontos<0) pontos=0;
 
-    }
-
-    // ===== LUZES =====
-
-    switch(luzes){
-
-        case "Sempre":
-            emissao += 12;
-            break;
-
-        case "Às vezes":
-            emissao += 6;
-            break;
-
-        case "Nunca":
-            emissao += 0;
-            break;
-
-    }
-
-    let pontos = Math.round(100 - emissao);
-
-    if(pontos > 100) pontos = 100;
-
-    if(pontos < 0) pontos = 0;
-
+//==============================
 // Mostrar resultado
+//==============================
 
 loading.style.display="none";
 
 resultado.style.display="block";
 
-document.getElementById("pontuacao").innerHTML=pontos+"/100";
+document.getElementById("pontuacao").innerHTML =
+pontos + "/100";
 
-// Ponteiro
+//==============================
+// Velocímetro
+//==============================
 
-let angulo=(pontos*1.8)-90;
+let angulo = (pontos * 1.8) - 90;
 
-document.getElementById("ponteiro").style.transform=
+document.getElementById("ponteiro").style.transform =
 "rotate("+angulo+"deg)";
 
+//==============================
 // Classificação
+//==============================
 
 let texto="";
-
-let cor="#2d6a4f";
+let cor="";
 
 if(pontos>=85){
 
-texto="🏆 Guardião do Planeta";
-
+texto="🌱 Baixa emissão";
 cor="#2d6a4f";
 
 }
+else if(pontos>=65){
 
-else if(pontos>=70){
-
-texto="🌿 Amigo da Natureza";
-
+texto="🌿 Emissão moderada";
 cor="#52b788";
 
 }
+else if(pontos>=40){
 
-else if(pontos>=50){
-
-texto="🌎 Em Evolução";
-
+texto="🌎 Emissão elevada";
 cor="#f4a261";
 
 }
-
 else{
 
-texto="🚨 Hora de mudar hábitos";
-
+texto="🚨 Alta emissão";
 cor="#e63946";
 
 }
 
-document.getElementById("nivel").innerHTML=texto;
-
-document.getElementById("nivel").style.color=cor;
-
-// Árvores
-
-let arvores=Math.ceil((100-pontos)/4)+2;
-
-document.getElementById("arvores").innerHTML=
-
-"<h2>🌳 Compensação Ambiental</h2>"+
-
-"<p>Plantando aproximadamente <b>"+
-
-arvores+
-
-" árvores</b> você ajudaria a compensar parte do seu impacto.</p>";
-
-// Missões
-
-let missoes = [];
-
-if(transporte=="Carro"){
-
-    missoes.push("🚶 Sempre que possível, faça trajetos curtos a pé ou de bicicleta.");
-
-    missoes.push("🚌 Utilize transporte público algumas vezes por semana.");
-
-}
-
-if(km>50){
-
-    missoes.push("📍 Reduza deslocamentos longos ou agrupe compromissos.");
-
-}
-
-if(energia>250){
-
-    missoes.push("💡 Reduza o consumo de energia desligando aparelhos fora de uso.");
-
-}
-
-if(led=="Não"){
-
-    missoes.push("💡 Troque as lâmpadas comuns por LED.");
-
-}
-
-if(banho=="Mais de 20 minutos"){
-
-    missoes.push("🚿 Diminua o tempo do banho para economizar água e energia.");
-
-}
-
-if(agua=="Alto"){
-
-    missoes.push("💧 Evite desperdícios fechando a torneira quando não estiver usando.");
-
-}
-
-if(reciclagem=="Nunca"){
-
-    missoes.push("♻️ Separe plástico, vidro, papel e metal para reciclagem.");
-
-}
-
-if(garrafa=="Não"){
-
-    missoes.push("🥤 Utilize uma garrafa reutilizável em vez de descartáveis.");
-
-}
-
-if(papel=="Muito"){
-
-    missoes.push("📄 Prefira documentos digitais sempre que possível.");
-
-}
-
-if(luzes=="Sempre"){
-
-    missoes.push("💡 Apague as luzes ao sair dos ambientes.");
-
-}
-
-if(missoes.length==0){
-
-    missoes.push("🏆 Parabéns! Seus hábitos já são bastante sustentáveis.");
-
-    missoes.push("🌱 Continue incentivando outras pessoas a cuidar do planeta.");
-
-}
-
-document.getElementById("missoes").innerHTML=
-
-"<h2>📍 Plano de Ação</h2><ul><li>"+
-
-missoes.join("</li><li>")+
-
-"</li></ul>";
-
-loading.style.display = "none";
-
-resultado.style.display = "block";
-
-document.getElementById("pontuacao").innerHTML = pontos + "/100";
-
-let nivel = "";
-let cor = "";
-let mensagem = "";
-
-if (pontos >= 85) {
-
-    nivel = "🟢 Baixa emissão";
-    cor = "#2ecc71";
-
-    mensagem =
-    "Parabéns! Seus hábitos geram uma baixa emissão de carbono. Continue mantendo esse estilo de vida sustentável.";
-
-} else if (pontos >= 60) {
-
-    nivel = "🟡 Emissão moderada";
-    cor = "#f1c40f";
-
-    mensagem =
-    "Você já possui bons hábitos, mas ainda pode reduzir bastante sua pegada adotando pequenas mudanças.";
-
-} else if (pontos >= 40) {
-
-    nivel = "🟠 Emissão alta";
-    cor = "#e67e22";
-
-    mensagem =
-    "Sua pegada de carbono está acima do ideal. Algumas mudanças na rotina podem fazer grande diferença.";
-
-} else {
-
-    nivel = "🔴 Emissão muito alta";
-    cor = "#e74c3c";
-
-    mensagem =
-    "Sua emissão de carbono é muito elevada. É recomendável rever hábitos de transporte, energia e consumo.";
-
-}
-
-document.getElementById("nivel").innerHTML = nivel;
+document.getElementById("nivel").innerHTML = texto;
 document.getElementById("nivel").style.color = cor;
 
-document.getElementById("ponteiro").style.transform =
-"rotate(" + ((pontos * 180) / 100 - 90) + "deg)";
+//==============================
+// Árvores
+//==============================
 
-document.getElementById("fraseEco").innerHTML = mensagem;
-
-const arvores = Math.max(1, Math.ceil(emissao / 8));
+let arvores = Math.max(1,Math.ceil(emissao/25));
 
 document.getElementById("arvores").innerHTML =
 
-"<h2>🌳 Compensação Ambiental</h2>" +
+"<h2>🌳 Compensação Ambiental</h2>"+
+"<p>Seriam necessárias aproximadamente <b>"+
+arvores+
+" árvores</b> para compensar parte dessa emissão.</p>";
 
-"<p>Para compensar aproximadamente sua emissão anual seriam necessárias <b>" +
+//==============================
+// Missões
+//==============================
 
-arvores +
+let missoes="<h2>🎯 Seu Plano de Ação</h2><br>";
 
-" árvores.</b></p>";
+if(transporte=="Carro")
+missoes+="🚲 Utilize transporte alternativo uma vez por semana.<br>";
 
-// Gráfico
+if(energia>200)
+missoes+="💡 Reduza o consumo de energia.<br>";
 
-const transporteGrafico = Math.min(40, Math.round(
-    (transporte=="Carro") ? 35 :
-    (transporte=="Moto") ? 25 :
-    (transporte=="Ônibus") ? 15 :
-    (transporte=="Bicicleta") ? 5 : 2
-));
+if(banho=="Mais de 10 minutos")
+missoes+="🚿 Tome banhos mais curtos.<br>";
 
-const energiaGrafico = Math.min(40, Math.round(energia * 0.18));
+if(agua=="Não")
+missoes+="💧 Reaproveite água sempre que possível.<br>";
 
-const aguaGrafico = Math.min(25,
-    agua=="Alto" ? 20 :
-    agua=="Médio" ? 12 : 5
-);
+if(reciclagem=="Não")
+missoes+="♻️ Faça coleta seletiva.<br>";
 
-const reciclagemGrafico = Math.min(20,
-    reciclagem=="Nunca" ? 20 :
-    reciclagem=="Às vezes" ? 10 : 2
-);
+if(garrafa=="Não")
+missoes+="🧴 Use uma garrafa reutilizável.<br>";
 
-const habitosGrafico = Math.min(30,
+if(papel=="Não")
+missoes+="📄 Evite desperdício de papel.<br>";
 
-    (led=="Não" ? 8 : 0) +
+if(luzes!="Sempre")
+missoes+="💡 Apague as luzes ao sair.<br>";
 
-    (garrafa=="Não" ? 5 : 0) +
+missoes+="🌱 Pequenas mudanças fazem grande diferença.";
 
-    (papel=="Muito" ? 10 :
-     papel=="Médio" ? 5 : 2) +
+document.getElementById("missoes").innerHTML = missoes;
 
-    (luzes=="Sempre" ? 10 :
-     luzes=="Às vezes" ? 5 : 0)
+//====================================
+// GRÁFICO
+//====================================
 
-);
+const canvas = document.getElementById("grafico");
 
-const ctx = document.getElementById("grafico").getContext("2d");
+if(canvas){
+
+const ctx = canvas.getContext("2d");
 
 if(window.graficoEco){
 
-    window.graficoEco.destroy();
+window.graficoEco.destroy();
 
 }
 
 window.graficoEco = new Chart(ctx,{
 
-    type:"doughnut",
+type:"doughnut",
 
-    data:{
+data:{
 
-        labels:[
-            "Transporte",
-            "Energia",
-            "Água",
-            "Reciclagem",
-            "Hábitos"
-        ],
+labels:[
+"Transporte",
+"Energia",
+"Hábitos"
+],
 
-        datasets:[{
+datasets:[{
 
-            data:[
+data:[
 
-                transporteGrafico,
+km*0.12+(
+transporte=="Carro"?30:
+transporte=="Moto"?20:
+transporte=="Ônibus"?10:
+transporte=="Bicicleta"?2:0
+),
 
-                energiaGrafico,
+energia*0.06+(led=="Não"?8:0),
 
-                aguaGrafico,
+emissao-
+(
+km*0.12+
+(transporte=="Carro"?30:
+transporte=="Moto"?20:
+transporte=="Ônibus"?10:
+transporte=="Bicicleta"?2:0)
+)-
+(energia*0.06+(led=="Não"?8:0))
 
-                reciclagemGrafico,
+]
 
-                habitosGrafico
+}]
 
-            ]
+},
 
-        }]
+options:{
 
-    },
+responsive:true,
 
-    options:{
+plugins:{
 
-        responsive:true,
+legend:{
+position:"bottom"
+}
 
-        plugins:{
+}
 
-            legend:{
-
-                position:"bottom"
-
-            }
-
-        }
-
-    }
+}
 
 });
 
-// ======================
-// Extras EcoCalc
-// ======================
+}
 
-// Frases
+//====================================
+// FRASES
+//====================================
 
 const frases=[
 
@@ -669,109 +551,48 @@ const frases=[
 
 "♻️ O melhor resíduo é aquele que não é produzido.",
 
-"🌳 A natureza agradece suas atitudes."
+"🌳 Não existe planeta B."
 
 ];
 
-const frase = document.getElementById("fraseEco");
+const frase=document.getElementById("fraseEco");
 
 if(frase){
 
-frase.innerHTML =
+frase.innerHTML=
+
 frases[Math.floor(Math.random()*frases.length)];
 
 }
 
-// Contador animado
+//====================================
+// BAIXAR
+//====================================
 
-let numero=document.getElementById("numero");
+const baixar=document.getElementById("baixarImagem");
 
-if(numero){
+if(baixar){
 
-let atual=0;
-
-let alvo=1247;
-
-let contador=setInterval(()=>{
-
-atual+=7;
-
-numero.innerHTML=atual;
-
-if(atual>=alvo){
-
-numero.innerHTML=alvo;
-
-clearInterval(contador);
-
-}
-
-},10);
-
-}
-
-// Modo escuro
-
-// ======================
-// Modo escuro
-// ======================
-
-const btnModoEscuro = document.getElementById("modoEscuro");
-
-if (btnModoEscuro) {
-
-    btnModoEscuro.addEventListener("click", () => {
-
-        document.body.classList.toggle("dark");
-
-        if (document.body.classList.contains("dark")) {
-            btnModoEscuro.innerHTML = "☀️ Modo Claro";
-        } else {
-            btnModoEscuro.innerHTML = "🌙 Modo Escuro";
-        }
-
-    });
-
-}
-
-// Baixar imagem (versão simples)
-
-document.getElementById("baixarImagem").onclick=()=>{
+baixar.onclick=()=>{
 
 window.print();
 
 };
 
-// Refazer
+}
 
-document.getElementById("refazer").onclick=()=>{
+//====================================
+// REFAZER
+//====================================
+
+const refazer=document.getElementById("refazer");
+
+if(refazer){
+
+refazer.onclick=()=>{
 
 location.reload();
 
 };
 
-// Folhas caindo
-
-function criarFolha(){
-
-let folha=document.createElement("div");
-
-folha.className="folha";
-
-folha.innerHTML="🍃";
-
-folha.style.left=Math.random()*100+"vw";
-
-folha.style.animationDuration=(5+Math.random()*6)+"s";
-
-document.body.appendChild(folha);
-
-setTimeout(()=>{
-
-folha.remove();
-
-},10000);
-
 }
-
-setInterval(criarFolha,700);
